@@ -1,0 +1,4 @@
+.env
+detector-logs/
+*.tar
+.DS_Store

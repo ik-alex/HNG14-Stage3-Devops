@@ -1,0 +1,33 @@
+log_file: /var/log/nginx/hng-access.log
+
+sliding_window_seconds: 60
+
+baseline_window_minutes: 30
+baseline_recalc_interval_seconds: 60
+baseline_floor_mean: 1.0
+baseline_floor_stddev: 0.5
+baseline_min_samples: 10
+
+zscore_threshold: 3.0
+rate_multiplier_threshold: 5.0
+error_rate_multiplier: 3.0
+error_threshold_tightening_factor: 0.5
+
+ban_durations_minutes:
+  - 10
+  - 30
+  - 120
+  - -1
+
+slack_webhook_url: "${SLACK_WEBHOOK_URL}"
+
+dashboard_host: "0.0.0.0"
+dashboard_port: 5000
+dashboard_refresh_seconds: 3
+
+audit_log_file: /var/log/detector/audit.log
+
+whitelist_ips:
+  - "127.0.0.1"
+  - "::1"
+  - "52.87.201.41"

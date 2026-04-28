@@ -1,0 +1,50 @@
+services:
+  nextcloud:
+    image: kefaslungu/hng-nextcloud
+    container_name: nextcloud
+    volumes:
+      - HNG-nginx-logs:/var/log/nginx:ro
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-proxy
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - HNG-nginx-logs:/var/log/nginx
+    depends_on:
+      - nextcloud
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  detector:
+    build: ./detector
+    container_name: anomaly-detector
+    volumes:
+      - HNG-nginx-logs:/var/log/nginx:ro
+      - detector-logs:/var/log/detector
+    ports:
+      - "5000:5000"
+    environment:
+      - SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL:-}
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    pid: host
+    restart: unless-stopped
+    networks:
+      - app-network
+
+volumes:
+  HNG-nginx-logs:
+    name: HNG-nginx-logs
+  detector-logs:
+
+networks:
+  app-network:
+    driver: bridge
